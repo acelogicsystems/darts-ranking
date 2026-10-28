@@ -1,4 +1,5 @@
 # Dart Ranking
+![Tests](https:/github.com/acelogicsystems/darts-ranking/actions/workflows/ci.yml/badge.svg)
 A small TypeScript engine that turns darts league scores into ranked
 leaderboard and a whatApp- ready broadcast message.
 
