@@ -1,30 +1,30 @@
 export type Score = {
   player: string;
   points: number;
-  legswon: nuber;
+  legsWon: number;
 };
 
 export type Ranked = Score & { rank: number};
 
-export function rankPlayer(scores: Score[]): Ranked[] {
+export function rankPlayers(scores: Score[]): Ranked[] {
   const totals = new Map<string, Score>();
 
   for (const s of scores) {
     const t = totals.get(s.player)?? {
       player: s.player,
       points: 0,
-      legswon: 0,
+      legsWon: 0,
     };
     t.points += s.points;
-    t.legswon += s.legsWon;
+    t.legsWon += s.legsWon;
     totals.set(s.player, t);
   }
 
 const sorted = [...totals.values()].sort(
   (a, b) =>
-    b.point - a.points ||
+    b.points - a.points ||
     b.legsWon - a.legsWon ||
-    a.player.localCompare(b.player)
+    a.player.localeCompare(b.player)
   );
 
 let rank = 0;
