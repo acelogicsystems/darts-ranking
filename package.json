@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsx --test ranking.test.ts formatter.test.ts",
+    "rank": "tsx rankCsv.ts"
   },
   "repository": {
     "type": "git",
