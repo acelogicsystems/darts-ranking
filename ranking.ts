@@ -2,6 +2,7 @@ export type Score = {
   player: string;
   points: number;
   legsWon: number;
+  event? : string;
 };
 
 export type Ranked = Score & { rank: number};
