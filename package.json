@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "tsx --test ranking.test.ts formatter.test.ts csv.test.ts events.test.ts season.test.ts config.test.ts report.test.ts",
-    "rank": "tsx rankCsv.ts"
+    "rank": "tsx rankCsv.ts",
+    "site": "tsx rankCsv.ts scores.csv --json --points=points.json"
   },
   "repository": {
     "type": "git",

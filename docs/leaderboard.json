@@ -33,10 +33,16 @@
           "rank": 1
         },
         {
+          "player": "Kevin",
+          "points": 6,
+          "legsWon": 2,
+          "rank": 2
+        },
+        {
           "player": "Brian",
           "points": 5,
           "legsWon": 2,
-          "rank": 2
+          "rank": 3
         }
       ]
     }
@@ -56,31 +62,31 @@
     },
     {
       "player": "Kevin",
-      "points": 7,
-      "legsWon": 3,
+      "points": 13,
+      "legsWon": 5,
       "rank": 3
     }
   ],
   "season": [
     {
       "player": "Amina",
-      "seasonPoints": 20,
+      "seasonPoints": 40,
       "wins": 2,
       "events": 2,
       "rank": 1
     },
     {
       "player": "Brian",
-      "seasonPoints": 18,
+      "seasonPoints": 25,
       "wins": 1,
       "events": 2,
       "rank": 2
     },
     {
       "player": "Kevin",
-      "seasonPoints": 6,
+      "seasonPoints": 15,
       "wins": 0,
-      "events": 1,
+      "events": 2,
       "rank": 3
     }
   ]
