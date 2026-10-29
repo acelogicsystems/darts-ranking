@@ -4,6 +4,8 @@ import { rankByEvent } from "./events";
 import { seasonStandings } from "./season";
 import { loadPointsTable } from "./config";
 import { formatBroadcast, formatSeasonBroadcast } from "./formatter";
+import { writeFileSync } from "node:fs";
+import { buildReport } from "./report";
 
 const args = process.argv.slice(2);
 const wantSeason = args.includes("--season");
@@ -23,6 +25,13 @@ if (pointsArg) {
 }
 
 const scores = loadScores(file);
+
+if (args.includes("--json")) {
+    const report = buildReport(scores, table);
+    writeFileSync("leaderboard.json", JSON.stringify(report, null, 2));
+    console.log("Wrote leaderboard.json");
+    process.exit(0);
+}
 
 if (wantSeason) {
     const season = seasonStandings(scores, table);

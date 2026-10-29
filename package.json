@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "tsx --test ranking.test.ts formatter.test.ts csv.test.ts events.test.ts season.test.ts config.test.ts",
+    "test": "tsx --test ranking.test.ts formatter.test.ts csv.test.ts events.test.ts season.test.ts config.test.ts report.test.ts",
     "rank": "tsx rankCsv.ts"
   },
   "repository": {
