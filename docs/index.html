@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Darts Rankings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--paper:#faf6ee;--card:#fffdf8;--ink:#22201c;--muted:#7a7467;--line:#e8e0d0;--green:#1f4d3a;--green-soft:#e7efe9;--gold:#b8893b;--gold-soft:#f5ecd6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--gold-soft);color:var(--ink)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+header{padding:64px 0 36px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fffdf8,var(--paper))}
+.eyebrow{letter-spacing:.22em;text-transform:uppercase;font-size:12px;color:var(--gold);font-weight:600}
+h1{font:700 clamp(38px,7vw,64px)/1.05 "Cormorant Garamond",Georgia,serif;margin:10px 0 12px;color:var(--green)}
+.sub{color:var(--muted);max-width:520px;margin:0}
+nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:32px 0 24px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 20px;border-radius:999px;font:500 14px Inter,sans-serif;cursor:pointer;transition:.2s}
+.tab:hover{border-color:var(--gold)}
+.tab[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fffdf8}
+select{font:500 14px Inter,sans-serif;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.card,.table-wrap{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(60,45,20,.04),0 14px 30px -20px rgba(60,45,20,.3)}
+.card{padding:22px}
+.card.r1{border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft),var(--card))}
+.place{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.name{font:700 28px "Cormorant Garamond",Georgia,serif;margin:6px 0 10px}
+.val{font-size:36px;font-weight:600;color:var(--green);line-height:1}
+.lab{font-size:13px;color:var(--muted);margin-top:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:420px}
+th{text-align:left;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:16px 20px;border-bottom:1px solid var(--line);font-weight:600}
+td{padding:16px 20px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#fbf6ea}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.chip{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--green-soft);color:var(--green);font-weight:600;font-size:14px}
+.chip.r1{background:var(--gold);color:#fffdf8}
+.chip.r2{background:#d9d4c7;color:var(--ink)}
+.chip.r3{background:#e4c9a6;color:#5b3d17}
+.msg{padding:40px;text-align:center;color:var(--muted)}
+footer{padding:36px 0 56px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">League standings</div>
+  <h1>Darts Rankings</h1>
+  <p class="sub">Season table, overall totals and every event. Tied players share a rank.</p>
+</div></header>
+<main class="wrap">
+  <nav id="nav"></nav>
+  <div id="main"><div class="msg">Loading…</div></div>
+</main>
+<footer><div class="wrap">Built from leaderboard.json by the darts-ranking engine.</div></footer>
+<script>
+const $ = (s) => document.querySelector(s);
+const state = { data: null, view: "season", event: 0 };
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+const views = {
+  season: {
+    label: "Season",
+    rows: () => state.data.season,
+    valueKey: "seasonPoints",
+    valueLabel: "season points",
+    cols: [["Rank", "rank"], ["Player", "player"], ["Season pts", "seasonPoints", 1], ["Wins", "wins", 1], ["Events", "events", 1]]
+  },
+  overall: {
+    label: "Overall",
+    rows: () => state.data.overall,
+    valueKey: "points",
+    valueLabel: "points",
+    cols: [["Rank", "rank"], ["Player", "player"], ["Points", "points", 1], ["Legs won", "legsWon", 1]]
+  },
+  events: {
+    label: "By event",
+    rows: () => (state.data.events[state.event] || { standings: [] }).standings,
+    valueKey: "points",
+    valueLabel: "points",
+    cols: [["Rank", "rank"], ["Player", "player"], ["Points", "points", 1], ["Legs won", "legsWon", 1]]
+  }
+};
+
+function buildNav() {
+  const nav = $("#nav");
+  nav.replaceChildren();
+  for (const [key, v] of Object.entries(views)) {
+    const b = el("button", "tab", v.label);
+    b.setAttribute("aria-pressed", String(state.view === key));
+    b.onclick = () => { state.view = key; buildNav(); render(); };
+    nav.append(b);
+  }
+  if (state.view === "events" && state.data.events.length) {
+    const sel = el("select");
+    state.data.events.forEach((e, i) => {
+      const o = el("option", "", e.name);
+      o.value = i;
+      sel.append(o);
+    });
+    sel.value = state.event;
+    sel.onchange = () => { state.event = Number(sel.value); render(); };
+    nav.append(sel);
+  }
+}
+
+function render() {
+  const v = views[state.view];
+  const rows = v.rows();
+  const main = $("#main");
+  main.replaceChildren();
+  if (!rows.length) { main.append(el("div", "msg", "No results yet.")); return; }
+
+  const pod = el("section", "podium");
+  rows.slice(0, 3).forEach((r) => {
+    const c = el("article", "card r" + r.rank);
+    c.append(
+      el("div", "place", "Rank " + r.rank),
+      el("div", "name", r.player),
+      el("div", "val", String(r[v.valueKey])),
+      el("div", "lab", v.valueLabel)
+    );
+    pod.append(c);
+  });
+
+  const wrap = el("div", "table-wrap");
+  const t = el("table");
+  const head = el("tr");
+  v.cols.forEach(([label, , num]) => head.append(el("th", num ? "num" : "", label)));
+  const thead = el("thead");
+  thead.append(head);
+  t.append(thead);
+
+  const body = el("tbody");
+  rows.forEach((r) => {
+    const tr = el("tr");
+    v.cols.forEach(([, key, num]) => {
+      const td = el("td", num ? "num" : "");
+      if (key === "rank") td.append(el("span", "chip r" + r.rank, String(r.rank)));
+      else td.textContent = String(r[key]);
+      tr.append(td);
+    });
+    body.append(tr);
+  });
+  t.append(body);
+  wrap.append(t);
+  main.append(pod, wrap);
+}
+
+fetch("leaderboard.json")
+  .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+  .then((d) => { state.data = d; buildNav(); render(); })
+  .catch(() => {
+    $("#main").replaceChildren(el("div", "msg", "Couldn’t load leaderboard.json. Run the export first, then serve this folder."));
+  });
+</script>
+</body>
+</html>

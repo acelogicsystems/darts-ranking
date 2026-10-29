@@ -1,0 +1,87 @@
+{
+  "events": [
+    {
+      "name": "Event 1",
+      "standings": [
+        {
+          "player": "Amina",
+          "points": 10,
+          "legsWon": 4,
+          "rank": 1
+        },
+        {
+          "player": "Brian",
+          "points": 10,
+          "legsWon": 4,
+          "rank": 1
+        },
+        {
+          "player": "Kevin",
+          "points": 7,
+          "legsWon": 3,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "name": "Event 2",
+      "standings": [
+        {
+          "player": "Amina",
+          "points": 8,
+          "legsWon": 3,
+          "rank": 1
+        },
+        {
+          "player": "Brian",
+          "points": 5,
+          "legsWon": 2,
+          "rank": 2
+        }
+      ]
+    }
+  ],
+  "overall": [
+    {
+      "player": "Amina",
+      "points": 18,
+      "legsWon": 7,
+      "rank": 1
+    },
+    {
+      "player": "Brian",
+      "points": 15,
+      "legsWon": 6,
+      "rank": 2
+    },
+    {
+      "player": "Kevin",
+      "points": 7,
+      "legsWon": 3,
+      "rank": 3
+    }
+  ],
+  "season": [
+    {
+      "player": "Amina",
+      "seasonPoints": 20,
+      "wins": 2,
+      "events": 2,
+      "rank": 1
+    },
+    {
+      "player": "Brian",
+      "seasonPoints": 18,
+      "wins": 1,
+      "events": 2,
+      "rank": 2
+    },
+    {
+      "player": "Kevin",
+      "seasonPoints": 6,
+      "wins": 0,
+      "events": 1,
+      "rank": 3
+    }
+  ]
+}
