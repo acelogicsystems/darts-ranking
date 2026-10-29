@@ -35,7 +35,14 @@ npm run rank -- scores.csv --season  #season standings
 npm run rank -- scores.csv --season --points=points.json
 npm test
 ```
+## Publishing the leaderboard
+After adding results to `scores.csv`:
+```
+npm run site
 
+git add . && git commit -m "Update results" && git push
+```
+GitHub Pages serves the `docs` folder, so the site updates within a minute.
 ## Season points
 Each event awards season points by finishing place. The default table is
 10, 8, 6, 5, 4, 3, 2, 1 and places beyond the table earn 0.
