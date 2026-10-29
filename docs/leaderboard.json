@@ -45,13 +45,24 @@
           "rank": 3
         }
       ]
+    },
+    {
+      "name": "Event 3",
+      "standings": [
+        {
+          "player": "Amina",
+          "points": 9,
+          "legsWon": 3,
+          "rank": 1
+        }
+      ]
     }
   ],
   "overall": [
     {
       "player": "Amina",
-      "points": 18,
-      "legsWon": 7,
+      "points": 27,
+      "legsWon": 10,
       "rank": 1
     },
     {
@@ -70,9 +81,9 @@
   "season": [
     {
       "player": "Amina",
-      "seasonPoints": 40,
-      "wins": 2,
-      "events": 2,
+      "seasonPoints": 60,
+      "wins": 3,
+      "events": 3,
       "rank": 1
     },
     {
