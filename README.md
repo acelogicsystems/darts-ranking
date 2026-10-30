@@ -35,14 +35,22 @@ npm run rank -- scores.csv --season  #season standings
 npm run rank -- scores.csv --season --points=points.json
 npm test
 ```
-## Publishing the leaderboard
-After adding results to `scores.csv`:
+## Publishing the leaderrboard
+The site updates itself. Add results to `scores.csv`, then:
 ```
-npm run site
-
 git add . && git commit -m "Update results" && git push
 ```
-GitHub Pages serves the `docs` folder, so the site updates within a minute.
+A GitHub Action regenerates `docs/leaderboard.json`, and Github Pages
+serves the new data within a minute. The update can also be started by
+hand from the Actions tab (Update leaderboard, the Run workflow).
+
+To preview locally instead, run `npm run site`.
+
+## Data checks
+The export stops with a clear messageif the same player appears twice in
+one event, so bad data never reaches the site.
+
+
 ## Season points
 Each event awards season points by finishing place. The default table is
 10, 8, 6, 5, 4, 3, 2, 1 and places beyond the table earn 0.
