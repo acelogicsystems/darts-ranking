@@ -43,6 +43,12 @@ tbody tr:hover{background:#fbf6ea}
 .chip.r2{background:#d9d4c7;color:var(--ink)}
 .chip.r3{background:#e4c9a6;color:#5b3d17}
 .msg{padding:40px;text-align:center;color:var(--muted)}
+.pcard{text-align: left; font:inherit;color:inherit;cursor:pointer;width:100%;transition:.2s}
+.pcard:hover{border-color:var(--gold);transform:translateY(-2px)}
+.form{display:flex;gap:6px;margin-top:14px}
+.pname{font:700 clamp(32px,6vw,48px)/1.1 "Cormorant Garamond",Georgia,serif;color:var(--green);margin:6px 0 20px}
+.back{margin-bottom:20px}
+.formcard{margin-bottom:28px}
 footer{padding:36px 0 56px;color:var(--muted);font-size:13px}
 </style>
 </head>
@@ -59,7 +65,7 @@ footer{padding:36px 0 56px;color:var(--muted);font-size:13px}
 <footer><div class="wrap">Built from leaderboard.json by the darts-ranking engine.</div></footer>
 <script>
 const $ = (s) => document.querySelector(s);
-const state = { data: null, view: "season", event: 0 };
+const state = { data: null, view: "season", event: 0, player: null };
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -89,7 +95,8 @@ const views = {
     valueKey: "points",
     valueLabel: "points",
     cols: [["Rank", "rank"], ["Player", "player"], ["Points", "points", 1], ["Legs won", "legsWon", 1]]
-  }
+  },
+  players: {label: "Players"}
 };
 
 function buildNav() {
@@ -98,7 +105,7 @@ function buildNav() {
   for (const [key, v] of Object.entries(views)) {
     const b = el("button", "tab", v.label);
     b.setAttribute("aria-pressed", String(state.view === key));
-    b.onclick = () => { state.view = key; buildNav(); render(); };
+    b.onclick = () => { state.view = key; state.player = null; buildNav(); render(); };
     nav.append(b);
   }
   if (state.view === "events" && state.data.events.length) {
@@ -115,6 +122,7 @@ function buildNav() {
 }
 
 function render() {
+  if (state.view === "players") { renderPlayer(); return; }
   const v = views[state.view];
   const rows = v.rows();
   const main = $("#main");
@@ -155,6 +163,94 @@ function render() {
   t.append(body);
   wrap.append(t);
   main.append(pod, wrap);
+}
+
+function formChips(form) {
+  const row = el("div", "form");
+  form.forEach((r) => row.append(el("span", "chip r" + r, String(r))));
+  return row;
+}
+
+function renderPlayer(){
+  const main = $("#main");
+  main.replaceChildren();
+  const profiles = state.data.profiles || [];
+  if (!profiles.length) {
+    main.append(el("div", "msg", "No profiles yet. Run the export again."));
+    return;
+  }
+  const p = profiles.find((x) => x.player === state.player);
+  if (p) {renderProfile(p); return; }
+
+  const grid = el("section", "podium");
+  profiles.forEach((pr) => {
+    const c = el("button", "card pcard");
+    c.append(
+      el("div", "name", pr.player),
+      el("div", "val", String(pr.seasonPoints)),
+      el("div", "lab", "season point · " + pr.events + " events"),
+      formChips(pr.form)
+    );
+    c.onclick = () => { state.player = pr.player; render(); window.scrollTo(0, 0); };
+    grid.append(c);
+  });
+  main.append(grid);
+}
+
+function renderProfile(p) {
+  const main = $("#main");
+  const back = el("button", "tab back", "← All players");
+  back.onclick = () => { state.player = null; render(); };
+
+  const stats = el("section", "podium");
+  [
+    ["Season points", p.seasonPoints],
+    ["Wins", p.wins],
+    ["Podiums", p.podiums],
+    ["Best finish", p.bestRank],
+    ["Average finish", p.averageRank],
+    ["Events", p.events]
+  ].forEach(([label, val]) => {
+    const c = el("article", "card");
+    c.append(el("div", "val", String(val)), el("div", "lab", label));
+    stats.append(c)
+  });
+
+  const formCard = el("div", "card formcard");
+  formCard.append(
+    el("div", "place", "Recent form"),
+    formChips(p.form),
+    el("div", "lab", "Finishing placein the last " + p.form.length + " events, oldest first")
+  );
+
+  const wrap = el("div", "table-wrap");
+  const t = el("table");
+  const head = el("tr");
+  [["Event", 0], ["place", 0], ["Points", 1], ["Legs", 1], ["Season pts", 1]].forEach(
+    ([label, num]) => head.append(el("th", num ? "num" : "", label))
+  );
+  const thead = el("thead");
+  thead.append(head);
+  const body = el("tbody");
+  p.results.forEach((r) => {
+    const tr = el("tr");
+    const place = el("td");
+    place.append(el("span", "chip r" + r.rank, String(r.rank)));
+    tr.append(
+      el("td", "", r.event),
+      place,
+      el("td", "num", String(r.points)),
+      el("td", "num", String(r.legsWon)),
+      el("td", "num", String(r.seasonPoints))
+    );
+    body.append(tr);
+  });
+  t.append(thead, body);
+  wrap.append(t);
+
+  const title = el("div");
+  title.append(el("div", "eyebrow", "Player profile"), el("h2", "pname", p.player));
+  main.replaceChildren(back, title, stats, formCard, wrap);
 }
 
 fetch("leaderboard.json")
