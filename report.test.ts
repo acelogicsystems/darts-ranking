@@ -23,3 +23,11 @@ test("survives a round trip through JSON", () => {
     const r = buildReport(data);
     assert.deepEqual(JSON.parse(JSON.stringify(r)), r);
 });
+
+test("includes a profile for every player",  () => {
+    const r = buildReport(data);
+    assert.deepEqual(
+        r.profiles.map((p) => p.player),
+        ["Amina", "Brian", "Kevin"]
+    );
+});
