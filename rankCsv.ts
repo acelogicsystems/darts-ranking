@@ -6,6 +6,7 @@ import { seasonStandings } from "./season";
 import { loadPointsTable } from "./config";
 import { formatBroadcast, formatSeasonBroadcast } from "./formatter";
 import { buildReport } from "./report";
+import { findDuplicates } from "./validate";
 
 const args = process.argv.slice(2);
 const wantSeason = args.includes("--season");
@@ -25,6 +26,13 @@ if (pointsArg) {
 }
 
 const scores = loadScores(file);
+
+const problems = findDuplicates(scores);
+if (problems.length > 0) {
+    console.error("Problems found in " + file + ":");
+    for (const p of problems) console.error(" – " + p);
+    process.exit(1);
+}
 
 if (args.includes("--json")) {
     const report = buildReport(scores, table);
