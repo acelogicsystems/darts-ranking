@@ -49,6 +49,9 @@ tbody tr:hover{background:#fbf6ea}
 .pname{font:700 clamp(32px,6vw,48px)/1.1 "Cormorant Garamond",Georgia,serif;color:var(--green);margin:6px 0 20px}
 .back{margin-bottom:20px}
 .formcard{margin-bottom:28px}
+.search{display:block;width:100%;max-width:380px;font:500 15px Inter,system-ui,sans-serif;padding:13px 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:22px}
+.search::placeholder{color:var(--muted)}
+.search:focus{border-color:var(--gold)}
 footer{padding:36px 0 56px;color:var(--muted);font-size:13px}
 </style>
 </head>
@@ -65,7 +68,7 @@ footer{padding:36px 0 56px;color:var(--muted);font-size:13px}
 <footer><div class="wrap">Built from leaderboard.json by the darts-ranking engine.</div></footer>
 <script>
 const $ = (s) => document.querySelector(s);
-const state = { data: null, view: "season", event: 0, player: null };
+const state = { data: null, view: "season", event: 0, player: null, query: " " };
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -227,30 +230,49 @@ function progressChart(results) {
 }
 
 
-function renderPlayer(){
+function renderPlayers() {
   const main = $("#main");
   main.replaceChildren();
   const profiles = state.data.profiles || [];
   if (!profiles.length) {
-    main.append(el("div", "msg", "No profiles yet. Run the export again."));
+    main.append(el("div", "msg", "No profiles yet. Run the export again"));
     return;
   }
   const p = profiles.find((x) => x.player === state.player);
-  if (p) {renderProfile(p); return; }
+  if (p) { renderProfile(p); return; }
+
+  const search = el("input", "search");
+  search.type = "text";
+  search.placeholder = "Search players";
+  search.setAttribute("aria-label", "Search players");
+  search.value = state.query;
 
   const grid = el("section", "podium");
-  profiles.forEach((pr) => {
-    const c = el("button", "card pcard");
-    c.append(
-      el("div", "name", pr.player),
-      el("div", "val", String(pr.seasonPoints)),
-      el("div", "lab", "season point · " + pr.events + " events"),
-      formChips(pr.form)
-    );
-    c.onclick = () => { state.player = pr.player; render(); window.scrollTo(0, 0); };
-    grid.append(c);
-  });
-  main.append(grid);
+
+  function draw() {
+    const q = state.query.trim().toLowerCase();
+    const shown = profiles.filter((pr) => pr.player.toLowerCase().includes(q));
+    grid.replaceChildren();
+    if (!shown.length) {
+      grid.append(el("div", "msg", "No players match ″" + state.query.trim() + "″․"));
+      return;
+    }
+    shown.forEach((pr) => {
+      const c = el("button", "card pcard");
+      c.append(
+        el("div", "name", pr.player),
+        el("div", "val", String(pr.seasonPoints)),
+        el("div", "lab", "season points · " + pr.events + "events"),
+        formChips(pr.form)
+      );
+      c.onclick = () => { state.play = pr.player; render(); window.scrollTo(0, 0); };
+      grid.append(c);
+    });
+  }
+
+  search.oninput = () => { state.query = search.value; draw(); };
+  draw();
+  main.append(search, grid);
 }
 
 function renderProfile(p) {

@@ -87,23 +87,23 @@
   "season": [
     {
       "player": "Amina",
-      "seasonPoints": 60,
+      "seasonPoints": 30,
       "wins": 3,
       "events": 3,
       "rank": 1
     },
     {
-      "player": "Brian",
-      "seasonPoints": 25,
-      "wins": 1,
-      "events": 2,
+      "player": "Kevin",
+      "seasonPoints": 22,
+      "wins": 0,
+      "events": 3,
       "rank": 2
     },
     {
-      "player": "Kevin",
-      "seasonPoints": 25,
-      "wins": 0,
-      "events": 3,
+      "player": "Brian",
+      "seasonPoints": 16,
+      "wins": 1,
+      "events": 2,
       "rank": 3
     }
   ],
@@ -116,21 +116,21 @@
           "rank": 1,
           "points": 10,
           "legsWon": 4,
-          "seasonPoints": 20
+          "seasonPoints": 10
         },
         {
           "event": "Event 2",
           "rank": 1,
           "points": 8,
           "legsWon": 3,
-          "seasonPoints": 20
+          "seasonPoints": 10
         },
         {
           "event": "Event 3",
           "rank": 1,
           "points": 9,
           "legsWon": 3,
-          "seasonPoints": 20
+          "seasonPoints": 10
         }
       ],
       "events": 3,
@@ -145,7 +145,7 @@
       ],
       "totalPoints": 27,
       "totalLegs": 10,
-      "seasonPoints": 60
+      "seasonPoints": 30
     },
     {
       "player": "Brian",
@@ -155,14 +155,14 @@
           "rank": 1,
           "points": 10,
           "legsWon": 4,
-          "seasonPoints": 20
+          "seasonPoints": 10
         },
         {
           "event": "Event 2",
           "rank": 3,
           "points": 5,
           "legsWon": 2,
-          "seasonPoints": 5
+          "seasonPoints": 6
         }
       ],
       "events": 2,
@@ -176,7 +176,7 @@
       ],
       "totalPoints": 15,
       "totalLegs": 6,
-      "seasonPoints": 25
+      "seasonPoints": 16
     },
     {
       "player": "Kevin",
@@ -186,21 +186,21 @@
           "rank": 3,
           "points": 7,
           "legsWon": 3,
-          "seasonPoints": 5
+          "seasonPoints": 6
         },
         {
           "event": "Event 2",
           "rank": 2,
           "points": 6,
           "legsWon": 2,
-          "seasonPoints": 10
+          "seasonPoints": 8
         },
         {
           "event": "Event 3",
           "rank": 2,
           "points": 4,
           "legsWon": 1,
-          "seasonPoints": 10
+          "seasonPoints": 8
         }
       ],
       "events": 3,
@@ -215,7 +215,7 @@
       ],
       "totalPoints": 17,
       "totalLegs": 6,
-      "seasonPoints": 25
+      "seasonPoints": 22
     }
   ]
 }
