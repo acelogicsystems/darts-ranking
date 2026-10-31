@@ -125,7 +125,7 @@ function buildNav() {
 }
 
 function render() {
-  if (state.view === "players") { renderPlayer(); return; }
+  if (state.view === "players") { renderPlayers(); return; }
   const v = views[state.view];
   const rows = v.rows();
   const main = $("#main");
