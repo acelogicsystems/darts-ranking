@@ -7,6 +7,8 @@ import { loadPointsTable } from "./config";
 import { formatBroadcast, formatSeasonBroadcast } from "./formatter";
 import { buildReport } from "./report";
 import { findDuplicates } from "./validate";
+import { buildProfiles } from "./profiles";
+import { headToHead, findProfile } from "./h2h";
 
 const args = process.argv.slice(2);
 const wantSeason = args.includes("--season");
@@ -27,6 +29,30 @@ if (pointsArg) {
 
 const scores = loadScores(file);
 
+const h2hArg = args.find((a) => a.startsWith("--h2h="));
+if (h2hArg) {
+    const [nameA = "", nameB = ""] = h2hArg.slice("--h2h=".length).split(":");
+    const profiles = buildProfiles(scores, table);
+    const a = findProfile(profiles, nameA);
+    const b = findProfile(profiles, nameB);
+    if (!a || !b || a === b) {
+        console.error(
+            "Use --h2h=Name1:Name2 with two different playes. Available: " +
+            profiles.map((p) => p.player).join(", ")
+        );
+        process.exit(1);
+    }
+    const r = headToHead(a, b);
+    if (r.meetings.length === 0) {
+        console.log(`${r.a} and ${r.b} havenot me in an event yet.`);
+    } else {
+        console.table(r.meetings);
+        console.log(
+            `${r.a} ${r.winsA} - ${r.ties} tied - ${r.winsB} ${r.b} (${r.meetings.length} events)`
+        );
+    }
+    process.exit(0)
+}
 const problems = findDuplicates(scores);
 if (problems.length > 0) {
     console.error("Problems found in " + file + ":");
