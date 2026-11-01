@@ -137,7 +137,7 @@ const views = {
 
 function whatsappText(rows, key, title) {
   const groups = new Map();
-  row.forEach((r) => {
+  rows.forEach((r) => {
     const g = groups.get(r.rank) || [];
     g.push(r);
     groups.set(r.rank, g);
