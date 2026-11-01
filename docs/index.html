@@ -49,6 +49,9 @@ tbody tr:hover{background:#fbf6ea}
 .pname{font:700 clamp(32px,6vw,48px)/1.1 "Cormorant Garamond",Georgia,serif;color:var(--green);margin:6px 0 20px}
 .back{margin-bottom:20px}
 .formcard{margin-bottom:28px}
+.toolbar{display: flex; justify-content: flex-end; margin-bottom: 16px}
+.copybtn{font: 600 14px Inter, system-ui, sans-serif;padding:11px 22px;border-radius:999px;border:1px solid var(--gold);background:(--gold-soft);color:var(--green);cursor:pointer;transition: .2s;}
+.copybtn:hover{background:var(--gold);color:#fffdf8}
 .search{display:block;width:100%;max-width:380px;font:500 15px Inter,system-ui,sans-serif;padding:13px 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:22px}
 .search::placeholder{color:var(--muted)}
 .search:focus{border-color:var(--gold)}
@@ -102,6 +105,38 @@ const views = {
   players: {label: "Players"}
 };
 
+function whatsappText(rows, key, title) {
+  const groups = new Map();
+  row.forEach((r) => {
+    const g = groups.get(r.rank) || [];
+    g.push(r);
+    groups.set(r.rank, g);
+  });
+  const lines = [...groups].map(
+    ([rank, list]) =>
+    "*" + rank + ".* " + list.map((p) => p.player).join(" / ") + " - " + list[0][key] + " pts" 
+   );
+   return ["*" + title + "*", "", ...lines].join("\n");
+  }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.append(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommmand("copy"); } catch {}
+      ta.remove();
+      return ok;
+    }
+  }
 function buildNav() {
   const nav = $("#nav");
   nav.replaceChildren();
@@ -132,6 +167,24 @@ function render() {
   main.replaceChildren();
   if (!rows.length) { main.append(el("div", "msg", "No results yet.")); return; }
 
+  const title = 
+  "DARTS RANKING - " + 
+  (state.view === "season"
+    ? "SEASON"
+    : state.view === "overall"
+    ? "OVERALL"
+    : state.data.events[state.event].name);
+
+  const bar = el("div" , "toolbar");
+  const copy = el("button", "copybtn", "Copy for WhatsApp");
+  copy.onclick = async () => {
+    const ok = await copyText(whatsappText(rows, v.valueKey, title));
+    copy.textContent = ok ? "Copied✔" : "copy failed";
+    setTimeout (() => { copy.textContent = "Copy for whatApp"; }, 2000);
+  };
+  bar.append(copy);
+
+  
   const pod = el("section", "podium");
   rows.slice(0, 3).forEach((r) => {
     const c = el("article", "card r" + r.rank);
@@ -165,7 +218,7 @@ function render() {
   });
   t.append(body);
   wrap.append(t);
-  main.append(pod, wrap);
+  main.append(bar,pod, wrap);
 }
 
 function formChips(form) {
