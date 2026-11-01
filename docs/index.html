@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Darts Rankings</title>
+<meta name="theme-color" content="#1f4d3a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏆%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -56,6 +58,34 @@ tbody tr:hover{background:#fbf6ea}
 .search::placeholder{color:var(--muted)}
 .search:focus{border-color:var(--gold)}
 footer{padding:36px 0 56px;color:var(--muted);font-size:13px}
+@media (max-width: 640px) {
+  .wrap{padding:0 16px}
+  header{padding:40px 0 24px}
+  nav{gap:6px;margin:22px 0 18px}
+  .tab{padding:9px 16px; font-size:13px}
+  select{width:100%}
+  .podium{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+  .card{padding:16px}
+  .name{font-size:24px}
+  .val{font-size:28px}
+  table{min-width:360px}
+  th,td{padding:12px 14px}
+  .toolbar{justify-content:stretch}
+  .copybtn{width:100%}
+  .search{max-width:none}
+}
+@media (hover:none){
+  .pcard:hover{transform:none}
+}
+@media print{
+  body{background:#fff}
+  header{background:none;padding:0 0 16px}
+  nav,.toolbar,.search,.back,footer{display:none}
+  card,.table-wrap{box-shadow:none;break-inside:avoid}
+  .table-wrap{overflow:visible}
+  tbody tr:hover{background:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
