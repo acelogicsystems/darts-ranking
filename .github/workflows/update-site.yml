@@ -23,6 +23,8 @@ jobs:
        - run: npm ci
        - run: npm run site
        - name: commit updated data
+         env:
+           Husky: 0
          run: |
            if git diff --quiet docs/leaderboard.json; then
              echo "No changes to publish"
