@@ -24,14 +24,12 @@
   },
   "homepage": "https://github.com/acelogicsystems/darts-ranking#readme",
   "devDependencies": {
-    "@types/node": "^26.6.5",
-    "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
-  },
-  "dependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
     "eslint": "^10.14.0",
     "eslint-plugin-html": "^8.2.1",
-    "globals": "^17.14.0"
+    "globals": "^17.14.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
   }
 }
