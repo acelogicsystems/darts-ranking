@@ -51,6 +51,11 @@ tbody tr:hover{background:#fbf6ea}
 .pname{font:700 clamp(32px,6vw,48px)/1.1 "Cormorant Garamond",Georgia,serif;color:var(--green);margin:6px 0 20px}
 .back{margin-bottom:20px}
 .formcard{margin-bottom:28px}
+.picker{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:24px}
+.picker{display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px}
+.picker select{width:100%}
+.vs{font:700 22px "Cormorant Garamond", Georgia,serif;color:var(--gold);padding-bottom:10px}
+.sect{margin:28px 0 12px;font:700 24px "Cormorant Garamond",Georgia,serif;color:var(--green)}
 .toolbar{display: flex; justify-content: flex-end; margin-bottom: 16px}
 .copybtn{font: 600 14px Inter, system-ui, sans-serif;padding:11px 22px;border-radius:999px;border:1px solid var(--gold);background:(--gold-soft);color:var(--green);cursor:pointer;transition: .2s;}
 .copybtn:hover{background:var(--gold);color:#fffdf8}
@@ -101,7 +106,7 @@ footer{padding:36px 0 56px;color:var(--muted);font-size:13px}
 <footer><div class="wrap">Built from leaderboard.json by the darts-ranking engine.</div></footer>
 <script>
 const $ = (s) => document.querySelector(s);
-const state = { data: null, view: "season", event: 0, player: null, query: " " };
+const state = { data: null, view: "season", event: 0, player: null, query: " ", compareA: null, compareB: null };
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -132,7 +137,8 @@ const views = {
     valueLabel: "points",
     cols: [["Rank", "rank"], ["Player", "player"], ["Points", "points", 1], ["Legs won", "legsWon", 1]]
   },
-  players: {label: "Players"}
+  players: {label: "Players"},
+  compare: {label: "Compare"}
 };
 
 function whatsappText(rows, key, title) {
@@ -191,6 +197,7 @@ function buildNav() {
 
 function render() {
   if (state.view === "players") { renderPlayers(); return; }
+  if (state.view === "compare") { renderCompare(); return; }
   const v = views[state.view];
   const rows = v.rows();
   const main = $("#main");
@@ -259,7 +266,7 @@ function formChips(form) {
 
 function svgEl(tag, attrs) {
   const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
-  for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(K, V);
+  for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v);
   return e;
 }
 
@@ -417,6 +424,116 @@ function renderProfile(p) {
     progressChart(p.results)
   );
   main.replaceChildren(back, title, stats, formCard, wrap);
+}
+
+function renderCompare() {
+  const main = $("#main");
+  main.replaceChildren();
+  const profiles = state.data.profiles || [];
+  if (profiles.length < 2) {
+    main.append(el("div", "msg", "Two players are needed to compare."));
+    return;
+  }
+
+  const has = (n) => profiles.some((p) => p.player === n);
+  if (!has(state.compareA)) state.compareA = profiles[0].player;
+  if (!has(state.compareB) || state.compareB === state.compareA) {
+    state.compareB = profiles.find((p) => p.player !== state.compareA).player;
+  }
+
+  function picker(label, key) {
+    const box = el("label", "picker");
+    box.append(el("span", "lab", label));
+    const sel = el("select");
+    profiles.forEach((p) => {
+      const o = el("option", "", p.player);
+      o.value = p.player;
+      sel.append(o);
+    });
+    sel.value = state[key];
+    sel.onchange = () => { state[key] = sel.value; render(); }
+    box.append(sel);
+    return box;
+  }
+
+  const bar = el("div", "pickers");
+  bar.append(picker("player A", "compareA"), el("span", "vs", "vs"), picker("player B", "compareB"));
+  main.append(bar);
+
+  const a = profiles.find((p) => p.player === state.compareA);
+  const b = profiles.find((p) => p.player === state.compareB);
+
+  const meetings = [];
+  a.results.forEach((ra) => {
+    const rb = b.results.find((r) => r.event === ra.event);
+    if (rb) meetings.push({ event: ra.event, ra: ra.rank, rb: rb.rank });
+  });
+  const winsA = meetings.filter((m) => m.ra < m.rb).length;
+  const winsB = meetings.filter((m) => m.rb < m.ra).length;
+  const ties = meetings.length - winsA - winsB;
+
+const cards = el("section", "podium");
+[[a.player, winsA, winsA > winsB], ["Tied", ties, false], [b.player, winsB, winsB > winsA]].forEach(
+  ([name, n, lead]) => {
+    const c = el("article", "card" + (lead ? " r1" : ""));
+    c.append(el("div", "name", name), el("div", "val", String(n)), el("div", "lab", n === 1 ? "event" : "events"));
+    cards.append(c);
+  }
+);
+main.append(cards);
+
+  if (!meetings.length) {
+    main.append(el("div", "msg", a.player + " and " + b.player + " have not met in an events yet."));
+  } else {
+    const wrap = el("div", "table-wrap");
+    const t = el("table");
+    const head = el("tr");
+    ["Event", a.player, b.player, "Better finish"].forEach((h) => head.append(el("th", "", h)));
+    const thead = el("thead");
+    thead.append(head);
+    const body = el("tbody");
+    meetings.forEach((m) => {
+      const tr = el("tr");
+      const ca = el("td");
+      ca.append(el("span", "chip r" + m.ra, String(m.ra)));
+      const cb = el("td");
+      cb.append(el("span", "chip r" + m.rb, String(m.rb)));
+      tr.append(
+        el("td", "", m.event),
+        ca,
+        cb,
+        el("td", "", m.ra < m.rb ? a.player : m.rb < m.ra ? b.player : "Tied")
+      );
+      body.append(tr)
+    });
+    t.append(thead, body);
+    wrap.append(t);
+    main.append(el("h3", "sect", "Shared events"), wrap);
+  }
+
+  const glance = el("div", "table-wrap");
+  const gt = el("table");
+  const gh = el("tr");
+  ["", a.player, b.player].forEach((h) => gh.append(el("th", "", h)));
+  const gthead = el("thead");
+  gthead.append(gh);
+  const gbody = el("tbody");
+  [
+    ["Season points", "seasonPoints"],
+    ["Wins", "wins"],
+    ["Podiums", "podiums"],
+    ["Best finish", "bestRank"],
+    ["Average finish", "averageRank"],
+    ["Events played", "events"]
+  ].forEach(([label, key]) => {
+    const tr = el("tr");
+    tr.append(el("td", "", label), el("td", "", String(a[key])), el("td", "", string(b[key])));
+    gbody.append(tr);
+  });
+  gt.append(gthead, gbody);
+  glance.append(gt);
+  main.append(el("h3", "sect", "Season at a glance"), glance);
+
 }
 
 fetch("leaderboard.json")
