@@ -478,7 +478,7 @@ function renderCompare() {
   const ties = meetings.length - winsA - winsB;
 
 const cards = el("section", "podium");
-[[a.player, winsA, winsA > winsB], ["Tied", ties, false], [b.player, winsB, winsB > winsA]].forEach(
+[[a.player, winsA, winsA > winB], ["Tied", ties, false], [b.player, winsB, winsB > winsA]].forEach(
   ([name, n, lead]) => {
     const c = el("article", "card" + (lead ? " r1" : ""));
     c.append(el("div", "name", name), el("div", "val", String(n)), el("div", "lab", n === 1 ? "event" : "events"));
