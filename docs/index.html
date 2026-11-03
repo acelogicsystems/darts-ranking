@@ -168,7 +168,7 @@ function whatsappText(rows, key, title) {
       document.body.append(ta);
       ta.select();
       let ok = false;
-      try { ok = document.execCommmand("copy"); } catch {}
+      try { ok = document.execCommmand("copy"); } catch { /* clipboard unavailable */}
       ta.remove();
       return ok;
     }
@@ -312,7 +312,12 @@ function progressChart(results) {
   pts.forEach((p, i) => {
     const dot = svgEl("circle", { cx: x(i), cy: y(p.total), r: 6, fill: "#b8893b", stroke: "#fffdf8", "stroke-width": 2 });
     const tip = svgEl("title");
-    tip.textContent = p.event.length > 12 ? p.event.slice(0, 11) + "…" : p.event;
+    tip.textContent = p.event + ": " + p.total + " season points";
+    dot.append(tip);
+    svg.append(dot);
+
+    const lab = svgEl("text", { x: x(i), y: H - 18, "text-anchor": "middle", "font-size": "11", fill: "#7a7467" });
+    lab.textContent = p.event.length > 12 ? p.event.slice(0, 11) + "…" : p.event;
     svg.append(lab);
   });
 
@@ -527,7 +532,7 @@ main.append(cards);
     ["Events played", "events"]
   ].forEach(([label, key]) => {
     const tr = el("tr");
-    tr.append(el("td", "", label), el("td", "", String(a[key])), el("td", "", string(b[key])));
+    tr.append(el("td", "", label), el("td", "", String(a[key])), el("td", "", String(b[key])));
     gbody.append(tr);
   });
   gt.append(gthead, gbody);

@@ -6,7 +6,10 @@
   "scripts": {
     "test": "tsx --test ranking.test.ts formatter.test.ts csv.test.ts events.test.ts season.test.ts config.test.ts report.test.ts validate.test.ts profiles.test.ts h2h.test.ts",
     "rank": "tsx rankCsv.ts",
-    "site": "tsx rankCsv.ts scores.csv --json --points=points.json"
+    "site": "tsx rankCsv.ts scores.csv --json --points=points.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"docs/*.html\"",
+    "check": "npm run typecheck && npm run lint && npm test"
   },
   "repository": {
     "type": "git",
@@ -24,5 +27,11 @@
     "@types/node": "^26.6.5",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "eslint-plugin-html": "^8.2.1",
+    "globals": "^17.14.0"
   }
 }
