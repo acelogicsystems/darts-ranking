@@ -1,30 +1,13 @@
 import { NextResponse } from "next/server";
-import path from "node:path";
-import { loadScores } from  "@/engine/loadCsv";
-import { loadPointsTable } from "@/engine/config";
-import { findDuplicates } from "@/engine/validate";
-import { buildReport } from "@/engine/report";
+import { getReport } from "@/lib/getReport";
 
+ export  const dynamic = "force-dynamic";
 
 export function GET() {
-    try {
-        const dataDir = path.join(process.cwd(), "data");
-        const scores = loadScores(path.join(dataDir, "scores.csv"));
-
-        const problems = findDuplicates(scores);
-        if (problems.length > 0) {
-            return NextResponse.json(
-                { error: "Invalid data", problems },
-                { status: 422}
-            );
-        }
-
-            const table = loadPointsTable(path.join(dataDir, "points.json"));
-            return NextResponse.json(buildReport(scores, table));
-         } catch (e) {
-            return NextResponse.json(
-                { error: (e as Error).message },
-                { status: 500 }
-            );
-         }
+    const result = getReport();
+    if (result.ok) return NextResponse.json(result.report);
+    return NextResponse.json(
+        { error: result.error, problems: result.problems },
+        { status: result.status }
+    );
 }
