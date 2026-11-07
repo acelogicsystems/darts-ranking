@@ -4,12 +4,14 @@ import { useState } from "react";
 import type { Report } from "@/engine/report";
 import Leaderboard from "@/components/Leaderboard";
 import Players from "@/components/Players";
+import Compare from "@/components/Compare"
 
-type Section = "standings" | "players";
+type Section = "standings" | "players" | "compare";
 
 const SECTIONS: { key: Section; label: string }[] =[
     { key: "standings", label: "Standings" },
     { key: "players", label: "Players"},
+    { key: "compare", label: "Compare"},
 ];
 
 export default function Dashboard({ report }: { report: Report }) {
@@ -40,6 +42,11 @@ export default function Dashboard({ report }: { report: Report }) {
                 <div className="pt-8">
                     <Players report={report} />
                 </div>    
+            )}
+            {section === "compare" && (
+                <div className="pt-8">
+                    <Compare report={report} />
+                </div>
             )}
         </div>
     );
