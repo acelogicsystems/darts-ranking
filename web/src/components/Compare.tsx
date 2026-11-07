@@ -144,7 +144,8 @@ export default function Compare({ report }: { report: Report}) {
             )}
 
             <h3 className={heading}>Season at a glance</h3>
-            <div className="oveerflow-x-auto rounded-2xl border border-line bg-card shadow-sm">
+            <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-sm">
+                <table className="w-full min-w-[360px] border-collapse">
                 <thead>
                     <tr>
                         <th className={`${th} text-left`} />
@@ -161,6 +162,7 @@ export default function Compare({ report }: { report: Report}) {
                         </tr>
                        ))}
                 </tbody>
+                </table>
             </div>
         </div>
     );
