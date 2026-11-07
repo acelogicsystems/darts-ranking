@@ -1,4 +1,4 @@
-import Leaderboard from "@/components/Leaderboard";
+import Dashboard from "@/components/Dashboard";
 import { getReport } from "@/lib/getReport";
 
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
       </header>
 
       {result.ok ? (
-        <Leaderboard report={result.report}/>
+        <Dashboard report={result.report}/>
       ) : (
         <div className="mt-10 rounded-2xl border border-gold bg-gold-soft p-6">
           <h2 className="font-display text-2xl font-bold text-green">

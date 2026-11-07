@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type  { Report } from "@/engine/report";
 import { formatBroadcast, formatSeasonBroadcast } from "@/engine/formatter";
+import  { chip } from "@/lib/ui";
 
 type View = "season" | "overall" | "events";
 
@@ -67,15 +68,7 @@ function buildView(report: Report, view: View, eventIndex: number): ViewData {
             `DARTS RANKINGS - ${event ? event.name : "EVENT"}`
         ),
     };
-
-    }
-     
-    function chip(rank: number): string {
-        if (rank === 1) return "bg-gold text-card";
-        if (rank === 2) return "bg-[#d9d4c7] text-ink";
-        if (rank === 3) return "bg-[#e4c9a6] text-[#5b3d17]";
-        return "bg-green-soft text-green";
-    }
+}
 
     export default function Leaderboard({ report }: { report: Report }) {
         const [view, setView] = useState<View>("season");
