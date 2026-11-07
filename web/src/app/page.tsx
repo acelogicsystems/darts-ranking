@@ -1,6 +1,7 @@
 import Dashboard from "@/components/Dashboard";
 import { getReport } from "@/lib/getReport";
 
+
 export default function Home() {
   const result = getReport();
 

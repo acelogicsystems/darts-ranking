@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getReport } from "@/lib/getReport";
 
- export  const dynamic = "force-dynamic";
+ 
 
 export function GET() {
     const result = getReport();
