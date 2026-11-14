@@ -34,7 +34,7 @@ test("rejects an empty name", async () => {
 test("rejects a duplicate name ignoring case", async () => {
     await request(app).post("/players").send({ name: "Brian" });
     const res = await request(app).post("/players").send({ name : "brian"});
-    assert.equal(res.status, 404);
+    assert.equal(res.status, 409);
 });
 
 test("returns 404 for a missing player", async () => {
