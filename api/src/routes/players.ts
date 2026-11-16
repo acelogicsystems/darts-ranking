@@ -1,32 +1,37 @@
 import { Router } from "express";
-import  { z } from "zod"; 
+import { z } from "zod";
 import { parseId } from "../ids";
 import { validateBody } from "../middleware";
-import * as players from "../services/playerService";
+import type { PlayerService } from "../services/playerService";
+
 
 const playerSchema = z.object({
     name: z
-      .string()
-      .trim()
-      .min(1, "name is required")
-      .max(50, "name must be 50 characters or fewer"),
+    .string()
+    .trim()
+    .min(1, "name is required")
+    .max(50, "name must be 50 characters or fewer"),
 });
 
-export const playersRouter = Router();
+export function playersRouter(players: PlayerService) {
+    const router = Router();
 
-playersRouter.get("/", (_req, res) => {
-    res.json(players.list());
-});
+    router.get("/", async (_req, res) => {
+        res.json(await players.list());
+    });
 
-playersRouter.post("/", validateBody(playerSchema), (req, res) => {
-    res.status(201).json(players.create(req.body.name));
-});
+    router.post("/", validateBody(playerSchema), async (req, res) => {
+        res.status(201).json(await players.create(req.body.name));
+    });
 
-playersRouter.get("/:id", (req, res) => {
-    res.json(players.get(parseId(req.params.id)));
-});
+    router.get("/:id", async (req, res) => {
+        res.json(await players.get(parseId(req.params.id)));
+    });
 
-playersRouter.delete("/:id", (req, res) => {
-    players.remove(parseId(req.params.id));
-    res.status(204).end();
-})
+    router.delete("/:id", async (req, res) => {
+        await players.remove(parseId(req.params.id));
+        res.status(204).end();
+    });
+
+    return router;
+}

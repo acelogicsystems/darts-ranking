@@ -1,23 +1,25 @@
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import { HttpError } from "./errors";
+import type { Store } from "./store";
+import { createPlayerService } from "./services/playerService";
+import { createScoreService } from "./services/scoreService";
 import { playersRouter } from "./routes/players";
 import { scoresRouter } from "./routes/scores";
-import { error } from "node:console";
 
-export function createApp() {
+export function createApp(store: Store) {
     const app = express();
     app.use(express.json());
 
     app.get("/health", (_req, res) => {
-        res.json({ status: "ok" });
+        res.json({ status: "ok"});
     });
 
-    app.use("/players", playersRouter);
-    app.use("/scores", scoresRouter);
+    app.use("/players", playersRouter(createPlayerService(store)));
+    app.use("/scores", scoresRouter(createScoreService(store)));
 
     app.use((_req, res) => {
-        res.status(404).json({error: "Not found"});
+        res.status(404).json({ error: "Not found" });
     });
 
     app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
@@ -32,8 +34,7 @@ export function createApp() {
             return;
         }
         if ((err as { status?: number }).status === 400) {
-            res.status(400).json({error: "Malformed request body" });
-            return
+            res.status(400).json({ error: "Something went wrong" });
         }
         console.error(err);
         res.status(500).json({ error: "Something went wrong" });

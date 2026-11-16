@@ -1,24 +1,32 @@
 import { HttpError } from "../errors";
-import * as store from "../store";
+import type { Store } from "../store";
 
-export function list() {
-    return store.listPlayers();
+export function createPlayerService(store: Store) {
+  return {
+    list() {
+      return store.listPlayers();
+    },
+
+    async get(id: string) {
+      const player = await store.findPlayer(id);
+      if (!player) throw new HttpError(404, "Player not found");
+      return player;
+    },
+
+    async create(name: string) {
+      const taken = (await store.listPlayers()).some(
+        (p) => p.name.toLowerCase() === name.toLowerCase()
+      );
+      if (taken) throw new HttpError(409, "Player already exists");
+      return store.addPlayer(name);
+    },
+
+    async remove(id: string) {
+      if (!(await store.removePlayer(id))) {
+        throw new HttpError(404, "Player not found");
+      }
+    },
+  };
 }
 
-export function get(id: number) {
-    const player = store.findPlayer(id);
-    if (!player) throw new HttpError(404, "Player not found");
-    return player;
-}
-
-export function create(name: string) {
-    const taken = store
-    .listPlayers()
-    .some((p) => p.name.toLowerCase() === name.toLowerCase());
-   if (taken)  throw new HttpError(409, "Player already exists");
-   return store.addPlayer(name);
-}
-
-export function remove(id: number) {
-    if (!store.removePlayer(id)) throw new HttpError(404, "Player not found");
-}
+export type PlayerService = ReturnType<typeof createPlayerService>;
